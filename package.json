@@ -1,0 +1,29 @@
+{
+  "name": "nz-pol-polls",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.16.2",
+    "cheerio": "^1.0.0-rc.2",
+    "d3-axis": "^1.0.8",
+    "d3-interpolate": "^1.1.5",
+    "d3-scale": "^1.0.6",
+    "d3-selection": "^1.1.0",
+    "d3-shape": "^1.2.0",
+    "lodash": "^4.17.4",
+    "react": "15.6.1",
+    "react-dom": "15.6.1",
+    "react-redux": "^5.0.5",
+    "redux": "^3.7.2",
+    "standard": "^10.0.2"
+  },
+  "devDependencies": {
+    "react-scripts": "1.0.10"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
