@@ -8,6 +8,13 @@ export default function (state = {polls: []}, action) {
         polls: wrangleData(action.data)
       }
     }
+    case 'LOAD_POLL_DATA': {
+      return {
+        ...state,
+        polls: action.data,
+        weighted: action.weighted
+      }
+    }
     default: {
       return state
     }

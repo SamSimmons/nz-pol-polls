@@ -4,3 +4,11 @@ export function loadData (data) {
     data
   }
 }
+
+export function loadPollData (data, weighted) {
+  return {
+    type: 'LOAD_POLL_DATA',
+    data,
+    weighted
+  }
+}

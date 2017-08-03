@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { scaleLinear } from 'd3-scale'
-import { line } from 'd3-shape'
-import { find, map, filter } from 'lodash'
+import { line, curveCardinal } from 'd3-shape'
+import { map } from 'lodash'
+import * as moment from 'moment'
 import { interpolateLab } from 'd3-interpolate'
 
 export default class Line extends Component {
@@ -15,31 +16,37 @@ export default class Line extends Component {
   }
 
   render () {
-    const { scales, margins, data, dimensions } = this.props
+    const { scales, data, party } = this.props
     const { xScale, yScale } = scales
-    const { height } = dimensions
     const drawLine = line()
+      .curve(curveCardinal)
       .x(d => xScale(d.x))
       .y(d => yScale(d.y))
 
-    const party = filter(map(data, (d) => {
-      const y = find(d.data, ['party', this.props.party])
-      ? find(d.data, ['party', this.props.party]).value
-      : undefined
+    const formatted = map(data, (d) => {
       return {
-        x: new Date(d.date),
-        y
+        x: new Date(moment(d.date, 'DD/MM/YYYY').format('MM/DD/YYYY')),
+        y: d[party]
       }
-    }), d => (!!d.x && !!d.y))
+    })
     return (
       <g>
         <path
-          d={drawLine(party)}
+          d={drawLine(formatted)}
           style={{
             fill: 'transparent',
-            strokeWidth: 20,
+            strokeWidth: 10,
             stroke: this.props.color ? this.props.color : 'tomato',
             opacity: 0.3
+          }}
+        />
+        <path
+          d={drawLine(formatted)}
+          style={{
+            fill: 'transparent',
+            strokeWidth: 0.5,
+            stroke: this.props.color ? this.props.color : 'tomato',
+            opacity: 0.5
           }}
         />
       </g>

@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { scaleLinear } from 'd3-scale'
-import { max, map, uniqBy, flatten, find } from 'lodash'
 import Axes from './Axes'
+import * as moment from 'moment'
 import Line from './Line'
 import Scatter from './Scatter'
 import './chart.css'
@@ -11,15 +11,14 @@ const getColor = (party) => {
   switch (party) {
     case 'National': { return '#09608A' }
     case 'Labour': { return '#E35C4F' }
-    case "Green": { return "#4A8A50" }
-    case "NZ First": { return "#616263" }
-    case "Maori": { return "#8A2923" }
-    case "United Future": { return "#8A2882" }
-    case "ACT": { return "#465F8A" }
-    case "Mana": { return "#8A3421" }
-    case "Conservative": { return "#469BB2" }
-    case "Internet": { return "#FF72EC" }
-    case "Opportunities": { return "#5D538A" }
+    case 'Green': { return '#4A8A50' }
+    case 'ACT': { return '#465F8A' }
+    case 'Maori': { return '#8A2923' }
+    case 'United Future': { return '#8A2882' }
+    case 'NZ First': { return '#616263' }
+    case 'Mana/Internet': { return '#FF72EC' }
+    case 'Conservative': { return '#469BB2' }
+    case 'The Opportunities Party': { return '#5D538A' }
     default: { return '#fcfcfc' }
   }
 }
@@ -38,19 +37,29 @@ class Chart extends Component {
     const { data } = this.props
     const margins = { top: 50, right: 20, bottom: 100, left: 60 }
     const dimensions = { width: 800, height: 500 }
-    const maxY = max(map(data, d => max(map(d.data, 'value'))))
+
+    const formatDate = (date) => new Date(moment(date, 'DD/MM/YYYY').format('MM/DD/YYYY'))
 
     const xScale = this.xScale
-      .domain([new Date(data[0].date), new Date(data[data.length - 1].date)])
+      .domain([formatDate(data[0].date_published), formatDate(data[data.length - 1].date_published)])
       .range([margins.left, dimensions.width - margins.right])
 
     const yScale = this.yScale
-      .domain([0, maxY])
+      .domain([0, 60])
       .range([dimensions.height - margins.bottom, margins.top])
 
-    const allPolls = flatten(map(data, 'data'))
-    const uniqueParties = map(uniqBy(allPolls, 'party'), 'party')
-    console.log(uniqueParties)
+    const uniqueParties = [
+      'National',
+      'Labour',
+      'ACT',
+      'Maori',
+      'United Future',
+      'NZ First',
+      'Conservative',
+      'Mana/Internet',
+      'Green',
+      'The Opportunities Party'
+    ]
 
     return (
       <div className='wrapper'>
@@ -63,12 +72,12 @@ class Chart extends Component {
           {
             uniqueParties.map(
               (party, i) =>
-                <g key={`party-line-${i}`}>
+                <g key={`party-wrapper-${party}`}>
                   <Line
                     scales={{ xScale, yScale }}
-                    data={this.props.data}
+                    data={this.props.weighted}
                     margins={margins}
-                    maxValue={maxY}
+                    maxValue={60}
                     dimensions={dimensions}
                     party={party}
                     color={getColor(party)}
@@ -77,7 +86,7 @@ class Chart extends Component {
                     scales={{ xScale, yScale }}
                     data={this.props.data}
                     margins={margins}
-                    maxValue={maxY}
+                    maxValue={60}
                     dimensions={dimensions}
                     party={party}
                     color={getColor(party)}
@@ -94,7 +103,7 @@ class Chart extends Component {
 const mapStateToProps = (state) => {
   return {
     data: state.data.polls,
-
+    weighted: state.data.weighted
   }
 }
 
